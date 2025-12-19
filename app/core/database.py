@@ -1,17 +1,20 @@
 from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker, declarative_base
+from sqlalchemy.orm import sessionmaker
 
-DATABASE_URL = "sqlite:///./cafeteria.db"
+# Si usas SQLite
+SQLALCHEMY_DATABASE_URL = "sqlite:///./cafeteria.db"
 
 engine = create_engine(
-    DATABASE_URL,
+    SQLALCHEMY_DATABASE_URL, 
     connect_args={"check_same_thread": False}
 )
 
-SessionLocal = sessionmaker(
-    autocommit=False,
-    autoflush=False,
-    bind=engine
-)
+SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
-Base = declarative_base()
+# Dependencia para los routers/servicios
+def get_db():
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
